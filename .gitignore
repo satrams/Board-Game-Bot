@@ -1,3 +1,6 @@
+src/secret.json
+build/bot.js
+
 # Logs
 logs
 *.log
