@@ -53,15 +53,8 @@ client.on('interactionCreate', interaction => {
 })
 
 client.on('messageReactionAdd', async reaction => {
-	if (reaction.partial) {
-		await reaction.fetch()
-			.then((fullReaction) => {
-				reaction = fullReaction as MessageReaction;
-			})
-			.catch(error => {
-				console.log('Something went wrong when fetching the message: ', error);
-			});
-	}
+
+	reaction = reaction.partial ? await reaction.fetch() : reaction; //If the reaction is a partial, reconstruct it first, and then continue with the rest of the function.
 
 	const reactionChannelIntercepts: Map<String, Interceptor> = new Map<String, Interceptor>([
 		[CHANNELLIST.voteChannel, voter],
