@@ -1,4 +1,4 @@
-import { Message, TextChannel, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, ModalActionRowComponentBuilder, CacheType, ModalSubmitInteraction, TextInputStyle, ButtonStyle, MessageComponent, ButtonInteraction, SelectMenuInteraction } from 'discord.js'
+import { Message, TextChannel, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, ModalActionRowComponentBuilder, CacheType, ModalSubmitInteraction, TextInputStyle, ButtonStyle, ButtonInteraction, SelectMenuInteraction } from 'discord.js'
 import { Interceptor } from './interceptor'
 
 const button = new ButtonBuilder()
@@ -10,7 +10,6 @@ const row = new ActionRowBuilder<ButtonBuilder>()
     .addComponents(
         button
     )
-
 
 const text_input = new TextInputBuilder()
     .setLabel("Number of Participants")
