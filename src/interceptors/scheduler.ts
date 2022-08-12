@@ -1,9 +1,9 @@
-import { Message, TextChannel, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, ModalActionRowComponent, ModalActionRowComponentBuilder, InteractionType, CacheType, ModalSubmitInteraction, TextInputStyle, ButtonStyle } from 'discord.js'
+import { Message, TextChannel, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, ModalActionRowComponentBuilder, CacheType, ModalSubmitInteraction, TextInputStyle, ButtonStyle, MessageComponent, ButtonInteraction, SelectMenuInteraction } from 'discord.js'
 import { Interceptor } from './interceptor'
 
 const button = new ButtonBuilder()
     .setLabel('Set Participants Number')
-    .setCustomId('Set Participants Number')
+    .setCustomId('Scheduler Set Participants Number')
     .setStyle(ButtonStyle.Primary);
 
 const row = new ActionRowBuilder<ButtonBuilder>()
@@ -18,7 +18,7 @@ const text_input = new TextInputBuilder()
     .setStyle(TextInputStyle.Short);
 
 const modal = new ModalBuilder()
-    .setCustomId('Set Amount Modal')
+    .setCustomId('Scheduler Set Amount Modal')
     .setTitle("Set Participants")
     .addComponents(new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(text_input));
 
@@ -33,7 +33,8 @@ export class Scheduler extends Interceptor {
         let thread = await channel.threads.create({
             name: "Discussion Thread",
             startMessage: message,
-        })
+        });
+
         embed
             .setAuthor({ name: message.author.username })
             .setDescription("This is an event that could be scheduled if the required amount of people are available.\nRequired People: ? (set this value)");
@@ -41,10 +42,6 @@ export class Scheduler extends Interceptor {
         await bot_message.react("✅");
         await bot_message.react("❔");
 
-        const collector = bot_message.createMessageComponentCollector();
-        collector.on('collect', async i => {
-            i.showModal(modal);
-        });
     };
 
     override async interceptModal(modal: ModalSubmitInteraction<CacheType>): Promise<void> {
@@ -60,5 +57,11 @@ export class Scheduler extends Interceptor {
             return;
         }
         await modal.reply({ content: 'There was an issue setting the number of participants (make sure you typed a valid number)', ephemeral: true })
+    }
+
+    override async interceptComponent(component: SelectMenuInteraction<CacheType> | ButtonInteraction<CacheType>): Promise<void> {
+        if (component instanceof ButtonInteraction<CacheType>) {
+            component.showModal(modal);
+        }
     }
 }
