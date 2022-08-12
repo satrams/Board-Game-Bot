@@ -1,4 +1,4 @@
-import type { Message, ModalSubmitInteraction } from "discord.js";
+import type { ButtonInteraction, CacheType, Message, MessageReaction, ModalSubmitInteraction, SelectMenuInteraction } from "discord.js";
 
 export class Interceptor {
 
@@ -11,6 +11,14 @@ export class Interceptor {
     }
 
     async interceptModal(_modal: ModalSubmitInteraction) {
+
+    }
+
+    async interceptComponent(_component: SelectMenuInteraction<CacheType> | ButtonInteraction<CacheType>) {
+
+    }
+
+    async interceptReaction(_reaction: MessageReaction) {
 
     }
 }

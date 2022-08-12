@@ -1,11 +1,13 @@
 import { token } from './secret.json';
-import { Client, IntentsBitField, InteractionType } from 'discord.js';
+import { Client, IntentsBitField, InteractionType, MessageReaction, Partials } from 'discord.js';
 import type { Interceptor } from './interceptors/interceptor';
 import { Scheduler } from './interceptors/scheduler';
 import { Voter } from './interceptors/voter';
+import * as CHANNELLIST from './channelList.json';
 
-const client = new Client({
+export const client = new Client({
 	intents: [IntentsBitField.Flags.Guilds, IntentsBitField.Flags.GuildMembers, IntentsBitField.Flags.GuildEmojisAndStickers, IntentsBitField.Flags.GuildInvites, IntentsBitField.Flags.GuildMessages, IntentsBitField.Flags.GuildMessageReactions, IntentsBitField.Flags.GuildMessageTyping],
+	partials: [Partials.Reaction]
 });
 
 client.on('ready', () => {
@@ -16,11 +18,10 @@ const voter = new Voter();
 const scheduler = new Scheduler();
 
 client.on('messageCreate', async (message) => {
-
 	// Specific behaviour for if the message occured in a specific channel
 	const channelIntercepts: Map<String, Interceptor> = new Map<String, Interceptor>([
-		['995881833231298640', voter],
-		['995881524962533446', scheduler],
+		[CHANNELLIST.voteChannel, voter],
+		[CHANNELLIST.scheduleChannel, scheduler],
 	]);
 
 	let interceptor = channelIntercepts.get(message.channelId);
@@ -29,14 +30,46 @@ client.on('messageCreate', async (message) => {
 });
 
 client.on('interactionCreate', interaction => {
-	if (interaction.type !== InteractionType.ModalSubmit) return;
-	const interactionIntercepts: Map<String, Interceptor> = new Map<String, Interceptor>([
-		['Set Amount Modal', scheduler]
+	if (interaction.type == InteractionType.ModalSubmit) {
+		const modalIntercepts: Map<String, Interceptor> = new Map<String, Interceptor>([
+			['Scheduler Set Amount Modal', scheduler]
+		])
+
+		let interceptor = modalIntercepts.get(interaction.customId);
+		console.log(interceptor);
+		interceptor?.interceptModal(interaction);
+	}
+	else if (interaction.type == InteractionType.MessageComponent) {
+		const componentIntercepts: Map<String, Interceptor> = new Map<String, Interceptor>([
+			['Scheduler Set Participants Number', scheduler]
+		])
+
+		let interceptor = componentIntercepts.get(interaction.customId);
+		console.log(interceptor);
+		interceptor?.interceptComponent(interaction);
+	}
+
+
+})
+
+client.on('messageReactionAdd', async reaction => {
+	if (reaction.partial) {
+		await reaction.fetch()
+			.then((fullReaction) => {
+				reaction = fullReaction as MessageReaction;
+			})
+			.catch(error => {
+				console.log('Something went wrong when fetching the message: ', error);
+			});
+	}
+
+	const reactionChannelIntercepts: Map<String, Interceptor> = new Map<String, Interceptor>([
+		[CHANNELLIST.voteChannel, voter],
 	])
 
-	let interceptor = interactionIntercepts.get(interaction.customId);
+	let interceptor = reactionChannelIntercepts.get(reaction.message.channelId);
 	console.log(interceptor);
-	interceptor?.interceptModal(interaction);
+	interceptor?.interceptReaction(reaction as MessageReaction);
 
 })
 
