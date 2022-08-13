@@ -1,9 +1,10 @@
 import { token } from './secret.json';
 import { Client, IntentsBitField, InteractionType, MessageReaction, Partials } from 'discord.js';
 import type { Interceptor } from './interceptors/interceptor';
+import * as CHANNELLIST from './channelList.json';
 import { Scheduler } from './interceptors/scheduler';
 import { Voter } from './interceptors/voter';
-import * as CHANNELLIST from './channelList.json';
+import { Showcaser } from './interceptors/showcaser';
 
 export const client = new Client({
 	intents: [IntentsBitField.Flags.Guilds, IntentsBitField.Flags.GuildMembers, IntentsBitField.Flags.GuildEmojisAndStickers, IntentsBitField.Flags.GuildInvites, IntentsBitField.Flags.GuildMessages, IntentsBitField.Flags.GuildMessageReactions, IntentsBitField.Flags.GuildMessageTyping],
@@ -16,12 +17,14 @@ client.on('ready', () => {
 
 const voter = new Voter();
 const scheduler = new Scheduler();
+const showcaser = new Showcaser();
 
 client.on('messageCreate', async (message) => {
 	// Specific behaviour for if the message occured in a specific channel
 	const channelIntercepts: Map<String, Interceptor> = new Map<String, Interceptor>([
 		[CHANNELLIST.voteChannel, voter],
 		[CHANNELLIST.scheduleChannel, scheduler],
+		[CHANNELLIST.showcaseChannel, showcaser]
 	]);
 
 	let interceptor = channelIntercepts.get(message.channelId);
