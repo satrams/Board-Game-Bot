@@ -1,4 +1,5 @@
-import { Message, TextChannel, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, ModalActionRowComponentBuilder, CacheType, ModalSubmitInteraction, TextInputStyle, ButtonStyle, ButtonInteraction, SelectMenuInteraction } from 'discord.js'
+import { Message, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, ModalActionRowComponentBuilder, CacheType, ModalSubmitInteraction, TextInputStyle, ButtonStyle, ButtonInteraction, SelectMenuInteraction } from 'discord.js'
+import { threadFromMessage } from './common';
 import { Interceptor } from './interceptor'
 
 const button = new ButtonBuilder()
@@ -28,11 +29,7 @@ const embed = new EmbedBuilder()
 export class Scheduler extends Interceptor {
 
     override async interceptMessage(message: Message<boolean>): Promise<void> {
-        let channel = message.channel as TextChannel;
-        let thread = await channel.threads.create({
-            name: "Discussion Thread",
-            startMessage: message,
-        });
+        let thread = await threadFromMessage(message);
 
         embed
             .setAuthor({ name: message.author.username })

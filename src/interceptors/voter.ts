@@ -2,6 +2,7 @@ import type { Message, MessageReaction, TextChannel } from 'discord.js'
 import { Interceptor } from './interceptor'
 import { inviteChannel } from '../channelList.json';
 import { client } from '../bot';
+import { threadFromMessage } from './common'
 
 export class Voter extends Interceptor {
 
@@ -10,11 +11,7 @@ export class Voter extends Interceptor {
 
         if (message.author.bot) return;
 
-        let channel = message.channel as TextChannel;
-        let thread = await channel.threads.create({
-            name: "Discussion Thread",
-            startMessage: message,
-        });
+        let thread = await threadFromMessage(message);
 
         await message.react("✅");
         await message.react("❌");
