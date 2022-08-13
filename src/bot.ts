@@ -7,7 +7,7 @@ import { Voter } from './interceptors/voter';
 import { Showcaser } from './interceptors/showcaser';
 
 export const client = new Client({
-	intents: [IntentsBitField.Flags.Guilds, IntentsBitField.Flags.GuildMembers, IntentsBitField.Flags.GuildEmojisAndStickers, IntentsBitField.Flags.GuildInvites, IntentsBitField.Flags.GuildMessages, IntentsBitField.Flags.GuildMessageReactions, IntentsBitField.Flags.GuildMessageTyping],
+	intents: [IntentsBitField.Flags.Guilds, IntentsBitField.Flags.GuildMembers, IntentsBitField.Flags.GuildEmojisAndStickers, IntentsBitField.Flags.GuildInvites, IntentsBitField.Flags.GuildMessages, IntentsBitField.Flags.MessageContent, IntentsBitField.Flags.GuildMessageReactions, IntentsBitField.Flags.GuildMessageTyping],
 	partials: [Partials.Reaction]
 });
 
