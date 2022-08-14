@@ -22,13 +22,16 @@ export class Voter extends Interceptor {
 
     override async interceptReaction(reaction: MessageReaction): Promise<void> {
 
+        if (reaction.me) return;
+
         let reactions = reaction.message.reactions.cache;
 
         if (reactions.get("👍")?.users.cache.has(client.user?.id as string)) return;
 
-        let total = (reactions.get("✅")?.count as number - 1) - (reactions.get("❌")?.count as number - 1);
+        const total = (reactions.get("✅")?.count as number - 1) - (reactions.get("❌")?.count as number - 1);
+        const required = (reaction.message.guild?.memberCount as number) / 2;
 
-        if (total > (reaction.message.guild?.memberCount as number) / 2) {
+        if (total > required) {
             let channel = reaction.message.guild?.channels.cache.get(inviteChannel) as TextChannel;
             await reaction.message.react("👍");
             await reaction.message.author?.send(`Congrats! Your vote has been approved! Here's the invite link you can send to your friend (if you need a new one just ask):\n\n${await channel.createInvite({
