@@ -8,7 +8,7 @@ import { Showcaser } from './interceptors/showcaser';
 
 export const client = new Client({
 	intents: [IntentsBitField.Flags.Guilds, IntentsBitField.Flags.GuildMembers, IntentsBitField.Flags.GuildEmojisAndStickers, IntentsBitField.Flags.GuildInvites, IntentsBitField.Flags.GuildMessages, IntentsBitField.Flags.MessageContent, IntentsBitField.Flags.GuildMessageReactions, IntentsBitField.Flags.GuildMessageTyping],
-	partials: [Partials.Reaction]
+	partials: [Partials.Reaction, Partials.Message]
 });
 
 client.on('ready', () => {
@@ -53,7 +53,7 @@ client.on('interactionCreate', interaction => {
 	}
 
 
-})
+});
 
 client.on('messageReactionAdd', async reaction => {
 
@@ -67,7 +67,7 @@ client.on('messageReactionAdd', async reaction => {
 	console.log(interceptor);
 	interceptor?.interceptReaction(reaction as MessageReaction);
 
-})
+});
 
 // Always keep this at the end of this file for simplicity
 client.login(token);
