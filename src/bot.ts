@@ -19,7 +19,15 @@ const voter = new Voter();
 const scheduler = new Scheduler();
 const showcaser = new Showcaser();
 
-client.on('messageCreate', async (message) => {
+const catchErrors = <T extends any[]>(handler: (...args: T) => Promise<any>) => async (...args: T) => {
+	try {
+		return handler(...args);
+	} catch (e) {
+		console.error(e);
+	}
+};
+
+client.on('messageCreate', catchErrors(async (message) => {
 	// Specific behaviour for if the message occured in a specific channel
 	const channelIntercepts: Map<String, Interceptor> = new Map<String, Interceptor>([
 		[CHANNELLIST.voteChannel, voter],
@@ -30,9 +38,9 @@ client.on('messageCreate', async (message) => {
 	let interceptor = channelIntercepts.get(message.channelId);
 	console.log(interceptor);
 	interceptor?.interceptMessage(message);
-});
+}));
 
-client.on('interactionCreate', interaction => {
+client.on('interactionCreate', catchErrors(async (interaction) => {
 	if (interaction.type == InteractionType.ModalSubmit) {
 		const modalIntercepts: Map<String, Interceptor> = new Map<String, Interceptor>([
 			['Scheduler Set Amount Modal', scheduler]
@@ -53,21 +61,21 @@ client.on('interactionCreate', interaction => {
 	}
 
 
-});
+}));
 
-client.on('messageReactionAdd', async reaction => {
+client.on('messageReactionAdd', catchErrors(async (reaction) => {
 
 	reaction = reaction.partial ? await reaction.fetch() : reaction; //If the reaction is a partial, reconstruct it first, and then continue with the rest of the function.
 
 	const reactionChannelIntercepts: Map<String, Interceptor> = new Map<String, Interceptor>([
 		[CHANNELLIST.voteChannel, voter],
-	])
+	]);
 
 	let interceptor = reactionChannelIntercepts.get(reaction.message.channelId);
 	console.log(interceptor);
 	interceptor?.interceptReaction(reaction as MessageReaction);
 
-});
+}));
 
 // Always keep this at the end of this file for simplicity
 client.login(token);
