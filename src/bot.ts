@@ -20,11 +20,7 @@ const scheduler = new Scheduler();
 const showcaser = new Showcaser();
 
 const catchErrors = <T extends any[]>(handler: (...args: T) => Promise<any>) => async (...args: T) => {
-	try {
-		return handler(...args);
-	} catch (e) {
-		console.error(e);
-	}
+	return handler(...args).catch(console.error);
 };
 
 client.on('messageCreate', catchErrors(async (message) => {
@@ -37,7 +33,7 @@ client.on('messageCreate', catchErrors(async (message) => {
 
 	let interceptor = channelIntercepts.get(message.channelId);
 	console.log(interceptor);
-	interceptor?.interceptMessage(message);
+	await interceptor?.interceptMessage(message);
 }));
 
 client.on('interactionCreate', catchErrors(async (interaction) => {
@@ -48,7 +44,7 @@ client.on('interactionCreate', catchErrors(async (interaction) => {
 
 		let interceptor = modalIntercepts.get(interaction.customId);
 		console.log(interceptor);
-		interceptor?.interceptModal(interaction);
+		await interceptor?.interceptModal(interaction);
 	}
 	else if (interaction.type == InteractionType.MessageComponent) {
 		const componentIntercepts: Map<String, Interceptor> = new Map<String, Interceptor>([
@@ -57,7 +53,7 @@ client.on('interactionCreate', catchErrors(async (interaction) => {
 
 		let interceptor = componentIntercepts.get(interaction.customId);
 		console.log(interceptor);
-		interceptor?.interceptComponent(interaction);
+		await interceptor?.interceptComponent(interaction);
 	}
 
 
@@ -73,7 +69,7 @@ client.on('messageReactionAdd', catchErrors(async (reaction) => {
 
 	let interceptor = reactionChannelIntercepts.get(reaction.message.channelId);
 	console.log(interceptor);
-	interceptor?.interceptReaction(reaction as MessageReaction);
+	await interceptor?.interceptReaction(reaction as MessageReaction);
 
 }));
 
