@@ -22,7 +22,7 @@ export class Voter extends Interceptor {
 
     override async interceptReaction(reaction: MessageReaction): Promise<void> {
 
-        if (reaction.client.user?.bot) return;
+        if (reaction.me) return;
 
         let reactions = reaction.message.reactions.cache;
 
@@ -30,6 +30,9 @@ export class Voter extends Interceptor {
 
         const total = (reactions.get("✅")?.count as number - 1) - (reactions.get("❌")?.count as number - 1);
         const required = (reaction.message.guild?.memberCount as number) / 2;
+
+        console.log(total);
+        console.log(required);
 
         if (total > required) {
             let channel = reaction.message.guild?.channels.cache.get(inviteChannel) as TextChannel;
@@ -40,6 +43,9 @@ export class Voter extends Interceptor {
             })
                 }`);
             await reaction.message.reply("This vote has been passed :)");
+            if (reaction.message.hasThread) { //sanity check to make sure the thread is still there
+                await reaction.message.thread?.setLocked();
+            }
         }
 
     }
