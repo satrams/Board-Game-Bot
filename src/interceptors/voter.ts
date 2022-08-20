@@ -22,8 +22,6 @@ export class Voter extends Interceptor {
 
     override async interceptReaction(reaction: MessageReaction): Promise<void> {
 
-        if (reaction.me) return;
-
         let reactions = reaction.message.reactions.cache;
 
         if (reactions.get("👍")?.users.cache.has(client.user?.id as string)) return;
