@@ -44,7 +44,7 @@ export class Voter extends Interceptor {
                 }`);
             await reaction.message.reply("This vote has been passed :)");
             if (reaction.message.hasThread) { //sanity check to make sure the thread is still there
-                await reaction.message.thread?.setLocked();
+                await reaction.message.thread?.setArchived();
             }
         }
 
